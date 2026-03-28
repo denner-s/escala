@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Escala Profissional</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 15px;
+
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+  url('https://media.licdn.com/dms/image/v2/D4D22AQFCoRw91-9yRQ/feedshare-shrink_800/feedshare-shrink_800/0/1698771369284?e=2147483647&v=beta&t=bYjEzHz9vK8UAwRRrobVF5MiJLJoLlOL-19CzYiJu4I');
+
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+
+  text-align: center;
+}
+
+/* CONTAINER */
+.container {
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  margin: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+h2 { margin-bottom: 15px; }
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* LINHA FORM */
+.linha-form {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.linha-form input,
+.linha-form select {
+  flex: 1;
+}
+
+/* BOTÕES */
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.criar { background: #007bff; color: white; }
+.gerar { background: #6f42c1; color: white; }
+.baixar { background: #28a745; color: white; }
+.compartilhar { background: #25d366; color: white; }
+
+.remover {
+  background: #dc3545;
+  color: white;
+  width: 45px;
+}
+
+/* CARD */
+#card {
+  margin: 20px auto;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: left;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 10px;
+}
+
+.linha {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 6px 0;
+}
+
+.linha small {
+  color: #666;
+  font-size: 12px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 480px) {
+  .linha-form {
+    flex-direction: column;
+  }
+
+  .remover {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>📋 Escala de Trabalho</h2>
+
+  <input type="date" id="data">
+
+  <button class="criar" onclick="adicionarCampo()">➕ Adicionar colaborador</button>
+
+  <div id="formColaboradores"></div>
+
+  <button class="gerar" onclick="gerar()">Gerar Escala</button>
+  <button class="baixar" onclick="baixar()">Baixar PNG</button>
+  <button class="compartilhar" onclick="compartilhar()">Compartilhar</button>
+</div>
+
+<!-- CARD -->
+<div id="card">
+  <div class="header">
+    <img class="logo" src="https://www.assai.com.br/sites/default/files/logo-assai2_0.png">
+    <h3 id="titulo">Escala</h3>
+    <small id="sub"></small>
+  </div>
+  <div id="lista"></div>
+</div>
+
+<script>
+let contador = 0;
+
+const colaboradores = [
+  { nome: "Isabella", cargo: "Chefe de Seção (Empório)" },
+  { nome: "Denner", cargo: "Chefe de Seção (Mercearia)" },
+  { nome: "Rafael", cargo: "Chefe de Seção (Mercearia)" },
+  { nome: "Pierre", cargo: "Chefe de Seção (Mercearia)" },
+  { nome: "Rodrigo", cargo: "Chefe de Seção (Prevenção)" },
+  { nome: "Fábio", cargo: "Chefe de Seção (Padaria e Cafeteria)" },
+  { nome: "Márcio", cargo: "Chefe de Seção (Prevenção)" },
+  { nome: "Paulo", cargo: "Chefe de Seção (Frente de Caixa)" },
+  { nome: "Leonardo", cargo: "Chefe de Seção (Frente de Caixa)" },
+  { nome: "Luiz", cargo: "Chefe de Seção (Açougue)" }
+];
+
+function adicionarCampo() {
+  const container = document.getElementById("formColaboradores");
+
+  let options = `<option value="">Selecionar</option>`;
+  colaboradores.forEach((c, i) => {
+    options += `<option value="${i}">${c.nome}</option>`;
+  });
+
+  const div = document.createElement("div");
+  div.classList.add("linha-form");
+  div.id = "linha" + contador;
+
+  div.innerHTML = `
+    <select id="colab${contador}" onchange="preencherCargo(${contador})">
+      ${options}
+    </select>
+
+    <input placeholder="Cargo" id="cargo${contador}" readonly>
+    <input placeholder="Horário" id="horario${contador}">
+    
+    <button class="remover" onclick="removerCampo(${contador})">❌</button>
+  `;
+
+  container.appendChild(div);
+  contador++;
+}
+
+function preencherCargo(id) {
+  const select = document.getElementById(`colab${id}`);
+  const cargoInput = document.getElementById(`cargo${id}`);
+
+  const index = select.value;
+
+  cargoInput.value = index !== "" ? colaboradores[index].cargo : "";
+}
+
+function removerCampo(id) {
+  const linha = document.getElementById("linha" + id);
+  if (linha) linha.remove();
+}
+
+function gerar() {
+  const lista = document.getElementById("lista");
+  const data = document.getElementById("data").value;
+
+  lista.innerHTML = "";
+
+  let dataFormatada = "---";
+  if (data) {
+    const d = new Date(data + "T00:00:00");
+    dataFormatada = d.toLocaleDateString("pt-BR");
+  }
+
+  document.getElementById("titulo").innerText = "Escala do Dia";
+  document.getElementById("sub").innerText = dataFormatada;
+
+  for (let i = 0; i < contador; i++) {
+    const select = document.getElementById(`colab${i}`);
+    const cargoInput = document.getElementById(`cargo${i}`);
+    const horarioInput = document.getElementById(`horario${i}`);
+
+    if (!select || !cargoInput || !horarioInput) continue;
+
+    const index = select.value;
+
+    const nome = index !== "" ? colaboradores[index].nome : "-";
+    const cargo = cargoInput.value || "-";
+    const horario = horarioInput.value || "-";
+
+    lista.innerHTML += `
+      <div class="linha">
+        <span>
+          <strong>${nome}</strong><br>
+          <small>${cargo}</small>
+        </span>
+        <span>${horario}</span>
+      </div>
+    `;
+  }
+}
+
+async function gerarCanvas() {
+  const canvas = await html2canvas(document.querySelector("#card"), {
+    scale: 3,
+    backgroundColor: "#ffffff"
+  });
+  return canvas;
+}
+
+async function baixar() {
+  const canvas = await gerarCanvas();
+
+  const link = document.createElement("a");
+  link.download = "escala.png";
+  link.href = canvas.toDataURL("image/png");
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+async function compartilhar() {
+  const canvas = await gerarCanvas();
+
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], "escala.png", { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: "Escala de Trabalho",
+        text: "Escala do dia",
+        files: [file]
+      });
+    } else {
+      alert("Seu celular não suporta compartilhamento direto.");
+    }
+  });
+}
+</script>
+
+</body>
+</html>
