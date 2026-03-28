@@ -15,8 +15,9 @@ body {
   margin: 0;
   padding: 15px;
 
+  /* BACKGROUND CORRETO */
   background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-  url('https://media.licdn.com/dms/image/v2/D4D22AQFCoRw91-9yRQ/feedshare-shrink_800/feedshare-shrink_800/0/1698771369284');
+  url('https://media.licdn.com/dms/image/v2/D4D22AQFCoRw91-9yRQ/feedshare-shrink_800/feedshare-shrink_800/0/1698771369284?e=2147483647&v=beta&t=bYjEzHz9vK8UAwRRrobVF5MiJLJoLlOL-19CzYiJu4I');
 
   background-size: cover;
   background-position: center;
@@ -86,9 +87,8 @@ button {
   text-align: center;
 }
 
-/* LOGO BASE64 */
 .logo {
-  width: 110px;
+  width: 120px;
   margin-bottom: 10px;
 }
 
@@ -131,8 +131,8 @@ button {
 <!-- CARD -->
 <div id="card">
   <div class="header">
-    <!-- LOGO EMBUTIDA (FUNCIONA NO DOWNLOAD) -->
-    <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABkElEQVR4Xu3XwQ3CMBBA0Zr//8vOQKQ0kDS1pC5nq2WEYLRhAHSeDsICAAAAAAAAAAAAAADA3Y3bZ8z8W3g7w1cP3wO8A+fBv8g3gJ3gFvgC7gC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvgJ/gT3gGvgC/gHfgN3gMvgO7gDvAAAAAAAAAAAAAADwPwE5WQY0Z0n6WQAAAABJRU5ErkJggg==">
+    <img id="logo" class="logo" crossorigin="anonymous"
+    src="https://www.assai.com.br/sites/default/files/logo-assai2_0.png">
 
     <h3 id="titulo">Escala</h3>
     <small id="sub"></small>
@@ -167,7 +167,7 @@ function adicionarCampo() {
 
   div.innerHTML = `
     <select id="colab${contador}" onchange="preencherCargo(${contador})">${options}</select>
-    <input id="cargo${contador}" placeholder="Cargo" readonly>
+    <input id="cargo${contador}" readonly placeholder="Cargo">
     <input id="horario${contador}" placeholder="Horário">
     <button class="remover" onclick="removerCampo(${contador})">❌</button>
   `;
@@ -179,7 +179,6 @@ function adicionarCampo() {
 function preencherCargo(id) {
   const select = document.getElementById(`colab${id}`);
   const cargo = document.getElementById(`cargo${id}`);
-
   cargo.value = select.value !== "" ? colaboradores[select.value].cargo : "";
 }
 
@@ -219,10 +218,26 @@ function gerar() {
   }
 }
 
+/* 🔥 CORREÇÃO DEFINITIVA DA LOGO */
 async function gerarCanvas() {
-  return await html2canvas(document.querySelector("#card"), {
-    scale: 3,
-    useCORS: true
+  const logo = document.getElementById("logo");
+
+  const response = await fetch(logo.src);
+  const blob = await response.blob();
+  const reader = new FileReader();
+
+  return new Promise(resolve => {
+    reader.onloadend = async () => {
+      logo.src = reader.result;
+
+      const canvas = await html2canvas(document.querySelector("#card"), {
+        scale: 3,
+        useCORS: true
+      });
+
+      resolve(canvas);
+    };
+    reader.readAsDataURL(blob);
   });
 }
 
@@ -241,10 +256,7 @@ async function compartilhar() {
     const file = new File([blob], "escala.png", { type: "image/png" });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        title: "Escala",
-        files: [file]
-      });
+      await navigator.share({ files: [file] });
     } else {
       alert("Compartilhamento não suportado.");
     }
