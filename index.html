@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <title>Escala Profissional</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="apple-touch-icon" href="favicon.png">
-<meta name="theme-color" content="#ff6600">
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
@@ -13,39 +11,44 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 15px;
+  margin: 20;
+  min-height: 100vh;
 
-  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
-  url('https://media.licdn.com/dms/image/v2/D4D22AQFCoRw91-9yRQ/feedshare-shrink_800/feedshare-shrink_800/0/1698771369284?e=2147483647&v=beta&t=bYjEzHz9vK8UAwRRrobVF5MiJLJoLlOL-19CzYiJu4I');
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
+}
+
+/* FORM */
+.container {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 0;
   text-align: center;
 }
 
-/* CONTAINER */
-.container {
-  background: rgba(255,255,255,0.95);
-  padding: 20px;
-  border-radius: 12px;
-  max-width: 500px;
-  margin: auto;
-}
-
-/* INPUTS */
 input, select {
   width: 100%;
   padding: 10px;
-  margin: 5px 0;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  margin: 6px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
 .linha-form {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .linha-form input,
@@ -57,10 +60,11 @@ input, select {
 button {
   width: 100%;
   padding: 12px;
-  margin-top: 8px;
+  margin-top: 6px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .criar { background: #007bff; color: white; }
@@ -74,36 +78,79 @@ button {
   width: 45px;
 }
 
-/* CARD */
+/* CARD CENTRAL */
 #card {
-  margin: 20px auto;
-  max-width: 400px;
-  background: white;
-  border-radius: 12px;
+  width: 100%;
+  max-width: 360px;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  text-align: left;
 }
 
+/* HEADER */
 .header {
   text-align: center;
-}
-
-.logo {
-  width: 120px;
   margin-bottom: 10px;
 }
 
+.logo {
+  width: 90px;
+  margin-bottom: 8px;
+}
+
+#titulo {
+  margin: 5px 0 0;
+}
+
+#sub {
+  color: #777;
+  font-size: 13px;
+}
+
+/* PLANTÃO */
+#plantaoBox {
+  display: none;
+  background: #fff8e1;
+  border-left: 4px solid #ffc107;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+#plantaoBox strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* LISTA */
 .linha {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
-  padding: 6px 0;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.linha small {
-  color: #666;
+.linha:last-child {
+  border-bottom: none;
+}
+
+.nome {
+  font-weight: 600;
+}
+
+.cargo {
   font-size: 12px;
+  color: #777;
 }
 
+.horario {
+  font-weight: 500;
+}
+
+/* MOBILE */
 @media (max-width: 480px) {
   .linha-form {
     flex-direction: column;
@@ -115,29 +162,37 @@ button {
 <body>
 
 <div class="container">
-  <h2>📋 Escala de Trabalho</h2>
+  <h2>📋 Escala</h2>
 
   <input type="date" id="data">
 
-  <button class="criar" onclick="adicionarCampo()">➕ Adicionar colaborador</button>
+  <select id="plantao">
+    <option value="">Plantão (opcional)</option>
+  </select>
+
+  <button class="criar" onclick="adicionarCampo()">+ Colaborador</button>
 
   <div id="formColaboradores"></div>
 
-  <button class="gerar" onclick="gerar()">Gerar Escala</button>
-  <button class="baixar" onclick="baixar()">Baixar PNG</button>
+  <button class="gerar" onclick="gerar()">Gerar</button>
+  <button class="baixar" onclick="baixar()">Baixar</button>
   <button class="compartilhar" onclick="compartilhar()">Compartilhar</button>
 </div>
 
-<!-- CARD -->
 <div id="card">
   <div class="header">
-    <!-- LOGO OFICIAL (FUNCIONA COM DOWNLOAD) -->
-    <img id="logo" class="logo"
+    <img class="logo"
     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Assa%C3%AD_Atacadista_logo_2024.svg/960px-Assa%C3%AD_Atacadista_logo_2024.svg.png">
 
     <h3 id="titulo">Escala</h3>
-    <small id="sub"></small>
+    <div id="sub"></div>
   </div>
+
+  <div id="plantaoBox">
+    <strong>Plantão</strong>
+    <div id="plantaoNome"></div>
+  </div>
+
   <div id="lista"></div>
 </div>
 
@@ -145,18 +200,29 @@ button {
 let contador = 0;
 
 const colaboradores = [
-  { nome: "Isabella", cargo: "Chefe de Seção (Empório)" },
-  { nome: "Luiz", cargo: "Chefe de Seção (Açougue)" },
-  { nome: "Igor", cargo: "Chefe de Seção (Perecíveis)" },
-  { nome: "Marco", cargo: "Chefe de Seção (Perecíveis)" },
-  { nome: "Denner", cargo: "Chefe de Seção (Mercearia)" },
-  { nome: "Rafael", cargo: "Chefe de Seção (Mercearia)" },
-  { nome: "Pierre", cargo: "Chefe de Seção (Mercearia)" },
-  { nome: "Rodrigo", cargo: "Chefe de Seção (Prevenção)" },
-  { nome: "Márcio", cargo: "Chefe de Seção (Prevenção)" },
-  { nome: "Fábio", cargo: "Chefe de Seção (Padaria e Cafeteria)" },
-  { nome: "Silvia", cargo: "Chefe ADM" },
+  { nome: "Isabella", cargo: "Empório" },
+  { nome: "Luiz", cargo: "Açougue" },
+  { nome: "Igor", cargo: "Perecíveis" },
+  { nome: "Marco", cargo: "Perecíveis" },
+  { nome: "Denner", cargo: "Mercearia" },
+  { nome: "Rafael", cargo: "Mercearia" },
+  { nome: "Pierre", cargo: "Mercearia" },
+  { nome: "Rodrigo", cargo: "Prevenção" },
+  { nome: "Márcio", cargo: "Prevenção" },
+  { nome: "Fábio", cargo: "Padaria" },
+  { nome: "Silvia", cargo: "ADM" },
 ];
+
+function carregarPlantao() {
+  const select = document.getElementById("plantao");
+  colaboradores.forEach((c, i) => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = c.nome;
+    select.appendChild(option);
+  });
+}
+carregarPlantao();
 
 function adicionarCampo() {
   const container = document.getElementById("formColaboradores");
@@ -172,9 +238,9 @@ function adicionarCampo() {
 
   div.innerHTML = `
     <select id="colab${contador}" onchange="preencherCargo(${contador})">${options}</select>
-    <input id="cargo${contador}" readonly placeholder="Cargo">
+    <input id="cargo${contador}" readonly placeholder="Setor">
     <input id="horario${contador}" placeholder="Horário">
-    <button class="remover" onclick="removerCampo(${contador})">❌</button>
+    <button class="remover" onclick="removerCampo(${contador})">x</button>
   `;
 
   container.appendChild(div);
@@ -197,10 +263,21 @@ function gerar() {
 
   lista.innerHTML = "";
 
-  const dataFormatada = data ? new Date(data).toLocaleDateString("pt-BR") : "---";
-
   document.getElementById("titulo").innerText = "Escala do Dia";
-  document.getElementById("sub").innerText = dataFormatada;
+  document.getElementById("sub").innerText =
+    data ? new Date(data).toLocaleDateString("pt-BR") : "";
+
+  const plantaoSelect = document.getElementById("plantao");
+  const plantaoBox = document.getElementById("plantaoBox");
+  const plantaoNome = document.getElementById("plantaoNome");
+
+  if (plantaoSelect.value !== "") {
+    const p = colaboradores[plantaoSelect.value];
+    plantaoNome.innerHTML = `<strong>${p.nome}</strong><span class="cargo">${p.cargo}</span>`;
+    plantaoBox.style.display = "block";
+  } else {
+    plantaoBox.style.display = "none";
+  }
 
   for (let i = 0; i < contador; i++) {
     const select = document.getElementById(`colab${i}`);
@@ -213,22 +290,20 @@ function gerar() {
 
     lista.innerHTML += `
       <div class="linha">
-        <span>
-          <strong>${nome}</strong><br>
-          <small>${cargo.value || "-"}</small>
-        </span>
-        <span>${horario.value || "-"}</span>
+        <div>
+          <div class="nome">${nome}</div>
+          <div class="cargo">${cargo.value || ""}</div>
+        </div>
+        <div class="horario">${horario.value || "-"}</div>
       </div>
     `;
   }
 }
 
-/* FUNÇÃO CORRETA PARA DOWNLOAD */
 async function gerarCanvas() {
   return await html2canvas(document.querySelector("#card"), {
     scale: 3,
-    useCORS: true,
-    allowTaint: false
+    useCORS: true
   });
 }
 
@@ -248,11 +323,11 @@ async function compartilhar() {
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
-        title: "Escala de Trabalho",
+        title: "Escala",
         files: [file]
       });
     } else {
-      alert("Compartilhamento não suportado.");
+      alert("Não suportado.");
     }
   });
 }
