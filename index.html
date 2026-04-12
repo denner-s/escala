@@ -11,7 +11,7 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  margin: 20;
+  margin: 20px;
   min-height: 100vh;
 
   display: flex;
@@ -104,9 +104,16 @@ button {
   margin: 5px 0 0;
 }
 
-#sub {
-  color: #777;
-  font-size: 13px;
+/* DATA DESTAQUE */
+#dataDestaque {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  background: #ff6400;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
 }
 
 /* PLANTÃO */
@@ -184,8 +191,8 @@ button {
     <img class="logo"
     src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Assa%C3%AD_Atacadista_logo_2024.svg/960px-Assa%C3%AD_Atacadista_logo_2024.svg.png">
 
-    <h3 id="titulo">Escala</h3>
-    <div id="sub"></div>
+    <h3 id="titulo">Escala do Dia</h3>
+    <div id="dataDestaque"></div>
   </div>
 
   <div id="plantaoBox">
@@ -200,6 +207,8 @@ button {
 let contador = 0;
 
 const colaboradores = [
+  { nome: "Douglas", cargo: "Gerente" },
+  { nome: "Leonardo", cargo: "Subgerente" },
   { nome: "Izabella", cargo: "Empório" },
   { nome: "Luis", cargo: "Açougue" },
   { nome: "Igor", cargo: "Perecíveis" },
@@ -207,7 +216,6 @@ const colaboradores = [
   { nome: "Paulo", cargo: "Frente de Caixa" },
   { nome: "Leonardo", cargo: "Frente de Caixa" },
   { nome: "Wallace", cargo: "FLV" },
-  { nome: "Marco", cargo: "Perecíveis" },
   { nome: "Milena", cargo: "Nutricionista" },
   { nome: "Denner", cargo: "Mercearia" },
   { nome: "Rafael", cargo: "Mercearia" },
@@ -267,12 +275,18 @@ function removerCampo(id) {
 function gerar() {
   const lista = document.getElementById("lista");
   const data = document.getElementById("data").value;
+  const dataEl = document.getElementById("dataDestaque");
 
   lista.innerHTML = "";
 
-  document.getElementById("titulo").innerText = "Escala do Dia";
-  document.getElementById("sub").innerText =
-    data ? new Date(data).toLocaleDateString("pt-BR") : "";
+  if (data) {
+    const [ano, mes, dia] = data.split("-");
+    const dataFormatada = new Date(ano, mes - 1, dia);
+
+    dataEl.innerText = dataFormatada.toLocaleDateString("pt-BR");
+  } else {
+    dataEl.innerText = "";
+  }
 
   const plantaoSelect = document.getElementById("plantao");
   const plantaoBox = document.getElementById("plantaoBox");
